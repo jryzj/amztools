@@ -1,0 +1,36 @@
+{
+  "manifest_version": 2,
+  "name": "jry",
+  "version": "1.0.0",
+  "description": "for chrome extension study",
+  "icons": {
+    "16": "/img/baic16.png",
+    "48": "/img/baic48.png",
+    "128": "/img/baic128.png"
+  },
+  "browser_action": {
+    "default_icon": "img/baic48.png",
+    "default_title": "this is a study",
+    "default_popup": "view/popup.html"
+  },
+  "background": {
+    "page": "/view/background.html"
+  },
+  "content_scripts": [
+    {
+      "matches": ["https://www.amazon.com/*"],
+      "js": [
+        "lib/jquery/jquery.js",
+        "lib/sheetjs/xlsx.full.min.js",
+        "js/const.js",
+        "js/output.js",
+        "js/parse.js",
+        "js/pageAction.js",
+        "js/procedure.js",
+        "js/content-script.js"
+      ]
+    }
+  ],
+  "content_security_policy": "script-src 'self' 'unsafe-eval'; object-src 'self'",
+  "permissions": ["storage", "downloads"]
+}

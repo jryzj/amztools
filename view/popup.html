@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <!-- ZUI 标准版压缩后的 CSS 文件 -->
+    <link rel="stylesheet" href="../lib/zui/css/zui.min.css" />
+
+    <!-- ZUI Javascript 依赖 jQuery -->
+    <script src="../lib/zui/lib/jquery/jquery.js"></script>
+    <!-- ZUI 标准版压缩后的 JavaScript 文件 -->
+    <script src="../lib/zui/js/zui.min.js"></script>
+    <script src="../lib/art_template/template-web.js"></script>
+    <title>Document</title>
+    <style>
+      .popup {
+        width: 720px;
+      }
+      .no-gutters > [class^="col-"] {
+        padding-left: 2px;
+        padding-right: 2px;
+      }
+      .form-control {
+        font-size: 12px;
+      }
+      .header {
+        text-align: center;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="popup">
+      <div class="container">
+        <div class="header">
+          <h2>AMZTOOLS 1.0.0</h2>
+        </div>
+        <div class="panel">
+          <div class="panel-body">
+            <div class="row row-no-gutters">
+              <div class="col-xs-10">
+                <div class="row no-gutters">
+                  <div class="col-xs-2">
+                    <select class="form-control" id="action">
+                      <option value="">选择任务</option>
+                      <option value="asin_rank">搜索排名</option>
+                      <!-- <option value="price_follow">价格跟踪</option>
+              <option value="review_collect">评论收集</option> -->
+                    </select>
+                  </div>
+                  <div class="col-xs-2">
+                    <select class="form-control" id="action-freq">
+                      <option value="">任务频率</option>
+                      <option value="1">单次立即</option>
+                      <option value="600000">10分钟</option>
+                      <!-- <option value="1200000">20分钟</option> -->
+                      <option value="1800000">30分钟</option>
+                      <option value="3600000">60分钟</option>
+                      <option value="7200000">120分钟</option>
+                      <option value="14400000">240分钟</option>
+                      <option value="28800000">480分钟</option>
+                      <option value="43200000">720分钟</option>
+                    </select>
+                  </div>
+                  <div class="col-xs-2">
+                    <input
+                      type="tel"
+                      class="form-control"
+                      placeholder="次数，0表示无限"
+                      id="action-times"
+                    />
+                  </div>
+                  <div class="col-xs-2">
+                    <input
+                      type="text"
+                      class="form-control"
+                      id="action-keyword"
+                      placeholder="关键词"
+                    />
+                  </div>
+                  <div class="col-xs-2">
+                    <input
+                      type="text"
+                      class="form-control"
+                      id="action-zipcode"
+                      placeholder="zipcode"
+                    />
+                  </div>
+                  <div class="col-xs-2">
+                    <input
+                      type="text"
+                      class="form-control"
+                      id="action-filename"
+                      placeholder="保存的文件名"
+                    />
+                  </div>
+                </div>
+              </div>
+
+              <div class="col-xs-2">
+                <button class="btn col-xs-12" id="create-task" type="button">
+                  增加任务
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="row">
+          <div class="col-sm-12">
+            <ul class="list-group" id="task-list"></ul>
+          </div>
+        </div>
+      </div>
+      <div class="modal fade" id="popupModal">
+        <div class="modal-dialog">
+          <div class="modal-content">
+            <div class="modal-header">
+              <button type="button" class="close" data-dismiss="modal">
+                <span aria-hidden="true">×</span
+                ><span class="sr-only">关闭</span>
+              </button>
+              <h4 class="modal-title">提示信息</h4>
+            </div>
+            <div class="modal-body">
+              <p id="popupMsg"></p>
+            </div>
+            <div class="modal-footer">
+              <button
+                type="button"
+                class="btn btn-default"
+                data-dismiss="modal"
+              >
+                关闭
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <script type="text/html" id="task-template">
+      {{each task_list}}
+      <li class="list-group-item">
+        <div class="row">
+          <div class="col-xs-1">
+            <span class="label label-primary">No.{{$index}}</span>
+          </div>
+          <div class="col-xs-9">
+            <span class="label">任务类型：{{$value.action}}</span>
+            <span class="label">执行频率：{{$value.actionFreq/1000}}秒</span>
+            <span class="label">执行次数：{{$value.actionTimes}}</span>
+            <span class="label">关键词：{{$value.actionKV}}</span>
+            <span class="label">目的邮编：{{$value.actionZipcode}}</span>
+            <span class="label">保存文件名：{{$value.actionFilename}}</span>
+            <span class="label">{{$value.handler}}</span>
+            <span class="label">{{$value.tabId}}</span>
+            <span class="label">任务开始时间：{{$value.time}}</span>
+            <span class="label">已执行次数：{{$value.times}}</span>
+          </div>
+          <div class="col-xs-1">
+            <span <% if($value.state=="done") {%>class="label label-success"<%}
+              else{%>class="label"<%}%>>{{$value.state}}</span>
+          </div>
+          <div class="col-xs-1">
+            <button <% if ($value.state=="done") {%>
+              class="btn btn-mini btn-del disabled"<%}
+              else {%>class="btn btn-mini btn-del"<%}%>
+              type="button" data-index={{$index}}>删除</button>
+          </div>
+        </div>
+      </li>
+      {{/each}}
+    </script>
+    <script src="../js/popup.js"></script>
+  </body>
+</html>
