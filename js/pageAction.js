@@ -108,6 +108,7 @@ async function amzSearch(kv) {
 
 async function amzContent(sel, eleFlag, gapTime = 1000) {
   await sureReady(eleFlag, gapTime);
+  await pageWaiting();
   return $(sel).html();
 }
 
@@ -129,6 +130,7 @@ async function amzGoNextPage() {
 async function amzGoUrl(url, eleFlag = document) {
   window.location.href = url;
   await sureReady(eleFlag);
+  await pageWaiting();
 }
 
 async function amzChangeLocation(
@@ -145,4 +147,5 @@ async function amzChangeLocation(
   $(ACT_SEL.slZipcodeApply, container)[0].click();
   await sureReady(ACT_SEL.slDoneBtn);
   $(ACT_SEL.slDoneBtn, container).click();
+  await pageWaiting();
 }
