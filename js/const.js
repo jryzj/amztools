@@ -11,6 +11,7 @@ const ACT_SEL = {
   slNextPageBtn: ".a-pagination .a-last",
   slNextPageBtnEnabled: ".a-pagination .a-last a",
   slNextPageBtnDisabled: ".a-pagination .a-disabled.a-last",
+  slDogsofamazon: "[alt^=Sorry]",
   // for one list
   asinPage: {
     slTitle: "#productTitle",
@@ -71,3 +72,27 @@ const curNLand = "https://www.amazon.com/?currency=USD&language=en_US";
 const ref = "&ref=nb_sb_noss"; // from north american?
 const maxAsinPage = Infinity; //7
 const pageWaitingMs = 3000;
+
+var wordCloudOption = {
+  gridSize: 8, // size of the grid in pixels
+  weightFactor: 2, // number to multiply for size of each word in the list
+  fontWeight: "normal", // 'normal', 'bold' or a callback
+  fontFamily: "Times, serif", // font to use
+  color: "random-light", // 'random-dark' or 'random-light'
+  backgroundColor: "#333", // the color of canvas
+  rotateRatio: 1, // probability for the word to rotate. 1 means always rotate,
+  // drawOutOfBound: false,
+  shrinkToFit: true,
+  // shape: "square",
+};
+
+var generalSetting = {
+  country: "US",
+  zipcode: 10005,
+  freq: 1800000,
+  maxTimes: Infinity,
+  maxPage: Infinity,
+  filename: "amzData",
+  fileExt: "csv",
+  wordFreq: ["review", "title", "color", "size"],
+};

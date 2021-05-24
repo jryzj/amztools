@@ -138,18 +138,21 @@ function getReviewOnPage(page) {
 
     let format_strip = $($(ACT_SEL.allReviews.slFormatStrip, review)[0]).html();
 
-    format_strip = format_strip.split(ACT_SEL.allReviews.rFormatStrip);
-    for (let i = 0, len = format_strip.length; i < len; i++) {
-      let [name, value] = format_strip[i].split(":");
-      info[name.toLowerCase().trim()] = value.trim();
+    if (format_strip) {
+      format_strip = format_strip.split(ACT_SEL.allReviews.rFormatStrip);
+      for (let i = 0, len = format_strip.length; i < len; i++) {
+        let [name, value] = format_strip[i].split(":");
+        info[name.toLowerCase().trim()] = value.trim();
+      }
+      // info["size"] = format_strip[0].trim();
+      // info["color"] = format_strip[1].trim();
     }
-    // info["size"] = format_strip[0].trim();
-    // info["color"] = format_strip[1].trim();
 
     info["avp"] = $($(ACT_SEL.allReviews.slAvp, review)[0]).text();
     info["review"] = $($(ACT_SEL.allReviews.slContent, review)[0])
       .text()
-      .trim();
+      .trim()
+      .replace(/\s+/g, " ");
     info["href"] = $($(ACT_SEL.allReviews.slHref, review)[0]).attr("href");
     // if (info["href"]) info["href"] = self.web_base + info["href"];
 

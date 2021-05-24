@@ -1,20 +1,47 @@
 $(document).ready(function () {
   let bg = chrome.extension.getBackgroundPage();
+  let generalSetting = bg.generalSetting;
+
   console.log("popup.js");
-  $("#create-task").click(function () {
+  function showGeneralSetting() {
+    let generalSettingHtml = template("general-setting-template", {
+      general_setting: JSON.parse(
+        JSON.stringify(generalSetting, (k, v) => {
+          return v === Infinity ? "Infinity" : v;
+        })
+      ),
+    });
+    $("#general-setting").html(generalSettingHtml);
+  }
+
+  function showTasks() {
+    let taskListHtml = template("task-template", { task_list: bg.taskList });
+    $("#task-list").html(taskListHtml);
+  }
+
+  $("#action").change(function () {
+    let value = $("#action").val();
+    if (value == "") value = "select-task";
+    $("#" + value).collapse("toggle");
+  });
+
+  //搜索排名
+  $("#task-asin-rank").click(function () {
     let msg = "";
-    console.log("create-task");
+    console.log("task-asin-rank");
     let action = $("#action").val();
-    let actionFreq = parseInt($("#action-freq").val());
-    let actionTimes = $("#action-times").val();
-    let actionKV = $("#action-keyword").val();
-    let actionZipcode = $("#action-zipcode").val();
-    let actionFilename = $("#action-filename").val();
+    let actionFreq = parseInt($("#asin-rank-freq").val());
+    let actionTimes = $("#asin-rank-times").val();
+    let actionKV = $("#asin-rank-keyword").val();
+    let actionMaxPage = $("#asin-rank-maxpage").val();
+    let actionZipcode = $("#asin-rank-zipcode").val();
+    let actionFilename = $("#asin-rank-filename").val();
     console.log(
       action,
       actionFreq,
       actionTimes,
       actionKV,
+      actionMaxPage,
       actionZipcode,
       actionFilename
     );
@@ -22,16 +49,15 @@ $(document).ready(function () {
       msg += "必须选择任务。\r\n";
     }
     if (isNaN(actionFreq)) {
-      msg += "必须选择任务频率。\r\n";
+      // msg += "必须选择任务频率。\r\n";
+      actionFreq = generalSetting.freq;
     }
 
     if (actionFreq == 1) {
       actionTimes = 1;
     }
-    if (isNaN(actionTimes)) {
-      msg += "必须输入任务次数。\r\n";
-    } else if (parseInt(actionTimes) == 0) {
-      actionTimes = Infinity;
+    if (isNaN(parseInt(actionTimes)) || parseInt(actionTimes) == 0) {
+      actionTimes = generalSetting.maxTimes;
     }
 
     if (actionKV == "") {
@@ -39,11 +65,19 @@ $(document).ready(function () {
     }
 
     if (actionZipcode == "") {
-      actionZipcode = "10005";
+      actionZipcode = generalSetting.zipcode;
+    }
+
+    if (isNaN(actionMaxPage) || parseInt(actionMaxPage) == 0) {
+      actionMaxPage = generalSetting.maxPage;
     }
 
     if (actionFilename == "") {
-      msg += "必须输入关键词。\r\n";
+      actionFilename =
+        generalSetting.filename +
+        new Date().getTime() +
+        "." +
+        generalSetting.fileExt;
     } else {
       let reg = new RegExp('[\\\\/:*?"<>|]');
       if (reg.test(actionFilename)) {
@@ -59,13 +93,120 @@ $(document).ready(function () {
         actionFreq,
         actionTimes,
         actionKV,
+        actionMaxPage,
         actionFilename,
         actionZipcode,
       });
     }
   });
 
-  $("#action-times").on("input", function () {
+  //评论收集
+  $("#task-review-collect").click(function () {
+    let msg = "";
+    console.log("task-review-collect");
+    let action = $("#action").val();
+    let actionAsin = $("#review-collect-asin").val();
+    let actionTimes = 1;
+    let actionMaxPage = $("#review-collect-maxpage").val();
+    let actionWordFreq = $("#review-collect-word-freq").val();
+    let actionZipcode = generalSetting.zipcode;
+    let actionFilename = $("#review-collect-filename").val();
+    console.log(
+      action,
+      actionAsin,
+      actionMaxPage,
+      actionWordFreq,
+      actionZipcode,
+      actionFilename
+    );
+    if (action == "") {
+      msg += "必须选择任务。\r\n";
+    }
+    if (actionAsin == "") {
+      msg += "asin必须输入。\r\n";
+    }
+
+    if (isNaN(parseInt(actionMaxPage)) || parseInt(actionMaxPage) == 0) {
+      actionMaxPage = generalSetting.maxPage;
+    }
+
+    if (actionWordFreq.trim() == "") {
+      actionWordFreq = generalSetting.wordFreq;
+    } else {
+      actionWordFreq = actionWordFreq.trim().toLowerCase().split("|");
+    }
+
+    if (actionFilename == "") {
+      actionFilename =
+        generalSetting.filename +
+        new Date().getTime() +
+        "." +
+        generalSetting.fileExt;
+    } else {
+      let reg = new RegExp('[\\\\/:*?"<>|]');
+      if (reg.test(actionFilename)) {
+        msg += "文件名不能包括特殊字符";
+      }
+    }
+    if (msg != "") {
+      $("#popupMsg").text(msg);
+      $("#popupModal").modal("toggle", "center");
+    } else {
+      bg.createTask({
+        action,
+        actionAsin,
+        actionTimes,
+        actionMaxPage,
+        actionWordFreq,
+        actionFilename,
+        actionZipcode,
+      });
+    }
+  });
+
+  //通用设置
+  $("#task-setting").click(function () {
+    let msg = "";
+    console.log("task-setting");
+    let action = $("#action").val();
+    // let actionAsin = $("#review-collect-asin").val();
+    // let actionTimes = 1;
+    // let actionMaxPage = $("#review-collect-maxpage").val();
+    let actionWordFreq = $("#setting-word-freq").val();
+    let actionZipcode = $("#setting-zipcode").val();
+    // let actionFilename = $("#review-collect-filename").val();
+    console.log(
+      action,
+      // actionAsin,
+      // actionMaxPage,
+      actionWordFreq,
+      actionZipcode
+      // actionFilename
+    );
+    if (action == "") {
+      msg += "必须选择任务。\r\n";
+    }
+
+    if (msg != "") {
+      $("#popupMsg").text(msg);
+      $("#popupModal").modal("toggle", "center");
+    } else {
+      if (actionZipcode.trim() != "") {
+        generalSetting.zipcode = actionZipcode.trim();
+      }
+
+      if (actionWordFreq.trim() != "") {
+        generalSetting.wordFreq = actionWordFreq
+          .trim()
+          .toLowerCase()
+          .split("|");
+      }
+
+      showGeneralSetting();
+    }
+  });
+
+  $(".num").on("input", function () {
     $(this).val(
       $(this)
         .val()
@@ -80,7 +221,7 @@ $(document).ready(function () {
     $(this).addClass("disabled");
   });
 
+  showGeneralSetting();
   console.dir(bg.taskList);
-  let taskListHtml = template("task-template", { task_list: bg.taskList });
-  $("#task-list").html(taskListHtml);
+  showTasks();
 });

@@ -49,8 +49,13 @@ function notHave(content, container, conType = "text") {
   }
 }
 
-async function sureReady(eleFlag = document, gapTime = 1000) {
+async function sureReady(
+  eleFlag = document,
+  maxTimes = Infinity,
+  gapTime = 1000
+) {
   return new Promise(function (res, rej) {
+    let times = 1;
     // if (document.readyState == "complete" && $(eleFlag).length > 0) {
     //   console.log("sureready 1");
     //   res();
@@ -77,6 +82,10 @@ async function sureReady(eleFlag = document, gapTime = 1000) {
       } else {
         console.log("sureready 3");
       }
+      times++;
+      if (times > maxTimes) {
+        clearInterval(t);
+      }
     }, gapTime);
   });
 }
@@ -98,6 +107,14 @@ async function sureReadyByEval(condition, gapTime = 1000) {
       }, gapTime);
     }
   });
+}
+
+function pageAvailable(content = document) {
+  if ($(ACT_SEL.slDogsofamazon, content).length > 0)
+    return { pageAvailable: false, reason: "not N/A" };
+  if ($("body", content).html().indexOf(antiRobot) != -1)
+    return { pageAvailable: false, reason: "anti robot" };
+  return { pageAvailable: true };
 }
 
 async function amzSearch(kv) {
@@ -127,6 +144,28 @@ async function amzGoNextPage() {
   return false;
 }
 
+async function amzGoSeeAllReview() {
+  await sureReady(ACT_SEL.allReviews.slSelf);
+  if ($(ACT_SEL.allReviews.slSelf).length > 0) {
+    $(ACT_SEL.allReviews.slSelf)[0].click();
+    await sureReady();
+    await pageWaiting();
+    return true;
+  }
+  return false;
+}
+
+async function amzClickGoPage(sel, gapTime = 1000) {
+  await sureReady(sel, gapTime);
+  if ($(sel).length > 0) {
+    $(sel)[0].click();
+    await sureReady();
+    await pageWaiting();
+    return true;
+  }
+  return false;
+}
+
 async function amzGoUrl(url, eleFlag = document) {
   window.location.href = url;
   await sureReady(eleFlag);
@@ -147,5 +186,6 @@ async function amzChangeLocation(
   $(ACT_SEL.slZipcodeApply, container)[0].click();
   await sureReady(ACT_SEL.slDoneBtn);
   $(ACT_SEL.slDoneBtn, container).click();
+  window.location.reload();
   await pageWaiting();
 }

@@ -18,100 +18,312 @@
         width: 720px;
       }
       .no-gutters > [class^="col-"] {
-        padding-left: 2px;
-        padding-right: 2px;
+        padding: 2px;
       }
       .form-control {
         font-size: 12px;
       }
-      .header {
+      .title {
         text-align: center;
+      }
+      .list-group {
+        margin-left: 10px;
+        margin-right: 10px;
       }
     </style>
   </head>
   <body>
     <div class="popup">
       <div class="container">
-        <div class="header">
-          <h2>AMZTOOLS 1.0.0</h2>
+        <div class="title">
+          <h2>AMZTOOLS 1.0.1</h2>
         </div>
         <div class="panel">
           <div class="panel-body">
-            <div class="row row-no-gutters">
-              <div class="col-xs-10">
-                <div class="row no-gutters">
-                  <div class="col-xs-2">
-                    <select class="form-control" id="action">
-                      <option value="">选择任务</option>
-                      <option value="asin_rank">搜索排名</option>
-                      <!-- <option value="price_follow">价格跟踪</option>
-              <option value="review_collect">评论收集</option> -->
-                    </select>
+            <div class="row">
+              <!-- 任务选择 -->
+              <div class="col-xs-2">
+                <select class="form-control" id="action">
+                  <option value="">选择任务</option>
+                  <option value="asin-rank">搜索排名</option>
+                  <!-- <option value="price-follow">价格跟踪</option> -->
+                  <option value="review-collect">评论收集</option>
+                  <option value="setting">通用设置</option>
+                </select>
+              </div>
+              <!-- 任务选择结束 -->
+              <!-- 任务参数区 -->
+              <div class="col-xs-10" id="input-group">
+                <!-- 选择任务 -->
+                <div
+                  class="row collapse"
+                  id="select-task"
+                  data-parent="#input-group"
+                ></div>
+                <!-- 选择任务结束 -->
+                <!-- 搜索排名 -->
+                <div
+                  class="row collapse"
+                  id="asin-rank"
+                  data-parent="#input-group"
+                >
+                  <div class="col-xs-10">
+                    <div class="row no-gutters">
+                      <div class="col-xs-3">
+                        <select class="form-control" id="asin-rank-freq">
+                          <option value="">任务频率</option>
+                          <option value="1">单次立即</option>
+                          <option value="300000">5分钟</option>
+                          <option value="600000">10分钟</option>
+                          <!-- <option value="1200000">20分钟</option> -->
+                          <option value="1800000">30分钟</option>
+                          <option value="3600000">60分钟</option>
+                          <option value="7200000">120分钟</option>
+                          <option value="14400000">240分钟</option>
+                          <option value="28800000">480分钟</option>
+                          <option value="43200000">720分钟</option>
+                        </select>
+                      </div>
+                      <div class="col-xs-3">
+                        <input
+                          type="tel"
+                          class="form-control num"
+                          placeholder="运行次数，默认通用设置"
+                          id="asin-rank-times"
+                        />
+                      </div>
+                      <div class="col-xs-3">
+                        <input
+                          type="text"
+                          class="form-control"
+                          id="asin-rank-keyword"
+                          placeholder="关键词"
+                        />
+                      </div>
+                      <!-- <div class="col-xs-3">
+                        <input
+                          type="tel"
+                          class="form-control"
+                          id="asin-rank-zipcode"
+                          placeholder="zipcode默认通用设置"
+                        />
+                      </div> -->
+                      <div class="col-xs-3">
+                        <input
+                          type="tel"
+                          class="form-control num"
+                          id="asin-rank-maxpage"
+                          placeholder="最多页数,默认通用设置"
+                        />
+                      </div>
+
+                      <div class="col-xs-3">
+                        <input
+                          type="text"
+                          class="form-control"
+                          id="asin-rank-filename"
+                          placeholder="保存的文件名"
+                        />
+                      </div>
+                    </div>
                   </div>
                   <div class="col-xs-2">
-                    <select class="form-control" id="action-freq">
-                      <option value="">任务频率</option>
-                      <option value="1">单次立即</option>
-                      <option value="600000">10分钟</option>
-                      <!-- <option value="1200000">20分钟</option> -->
-                      <option value="1800000">30分钟</option>
-                      <option value="3600000">60分钟</option>
-                      <option value="7200000">120分钟</option>
-                      <option value="14400000">240分钟</option>
-                      <option value="28800000">480分钟</option>
-                      <option value="43200000">720分钟</option>
-                    </select>
-                  </div>
-                  <div class="col-xs-2">
-                    <input
-                      type="tel"
-                      class="form-control"
-                      placeholder="次数，0表示无限"
-                      id="action-times"
-                    />
-                  </div>
-                  <div class="col-xs-2">
-                    <input
-                      type="text"
-                      class="form-control"
-                      id="action-keyword"
-                      placeholder="关键词"
-                    />
-                  </div>
-                  <div class="col-xs-2">
-                    <input
-                      type="text"
-                      class="form-control"
-                      id="action-zipcode"
-                      placeholder="zipcode"
-                    />
-                  </div>
-                  <div class="col-xs-2">
-                    <input
-                      type="text"
-                      class="form-control"
-                      id="action-filename"
-                      placeholder="保存的文件名"
-                    />
+                    <button class="btn" id="task-asin-rank" type="button">
+                      增加任务
+                    </button>
                   </div>
                 </div>
-              </div>
+                <!-- 搜索排名结束 -->
+                <!-- 价格跟踪 -->
+                <div
+                  class="row collapse"
+                  id="price-follow"
+                  data-parent="#input-group"
+                >
+                  <div class="col-xs-10">
+                    <div class="row no-gutters">
+                      <div class="col-xs-2">
+                        <select class="form-control" id="action-freq">
+                          <option value="">任务频率</option>
+                          <option value="1">单次立即</option>
+                          <option value="600000">10分钟</option>
+                          <!-- <option value="1200000">20分钟</option> -->
+                          <option value="1800000">30分钟</option>
+                          <option value="3600000">60分钟</option>
+                          <option value="7200000">120分钟</option>
+                          <option value="14400000">240分钟</option>
+                          <option value="28800000">480分钟</option>
+                          <option value="43200000">720分钟</option>
+                        </select>
+                      </div>
+                      <div class="col-xs-2">
+                        <input
+                          type="tel"
+                          class="form-control"
+                          placeholder="次数a，0表示无限"
+                          id="action-times"
+                        />
+                      </div>
+                      <div class="col-xs-2">
+                        <input
+                          type="text"
+                          class="form-control"
+                          id="action-keyword"
+                          placeholder="关键词"
+                        />
+                      </div>
+                      <div class="col-xs-2">
+                        <input
+                          type="text"
+                          class="form-control"
+                          id="action-zipcode"
+                          placeholder="zipcode"
+                        />
+                      </div>
+                      <div class="col-xs-2">
+                        <input
+                          type="text"
+                          class="form-control"
+                          id="action-filename"
+                          placeholder="保存的文件名"
+                        />
+                      </div>
+                    </div>
+                  </div>
+                  <div class="col-xs-2">
+                    <button
+                      class="btn col-xs-12"
+                      id="task-price-follow"
+                      type="button"
+                    >
+                      增加任务
+                    </button>
+                  </div>
+                </div>
+                <!-- 价格跟踪结束 -->
+                <!-- 评论收集 -->
+                <div
+                  class="row collapse"
+                  id="review-collect"
+                  data-parent="#input-group"
+                >
+                  <div class="col-xs-10">
+                    <div class="col-xs-3">
+                      <input
+                        type="text"
+                        class="form-control"
+                        id="review-collect-asin"
+                        placeholder="asin"
+                      />
+                    </div>
+                    <!-- <div class="col-xs-3">
+                      <input
+                        type="tel"
+                        class="form-control num"
+                        placeholder="运行次数，默认通用设置"
+                        id="review-collect-times"
+                      />
+                    </div> -->
+                    <div class="col-xs-3">
+                      <input
+                        type="tel"
+                        class="form-control num"
+                        id="review-collect-maxpage"
+                        placeholder="最多页数,默认通用设置"
+                      />
+                    </div>
 
-              <div class="col-xs-2">
-                <button class="btn col-xs-12" id="create-task" type="button">
-                  增加任务
-                </button>
+                    <div class="col-xs-3">
+                      <input
+                        type="text"
+                        class="form-control"
+                        id="review-collect-word-freq"
+                        placeholder="词频字段，|分割，默认通用设置"
+                      />
+                    </div>
+
+                    <div class="col-xs-3">
+                      <input
+                        type="text"
+                        class="form-control"
+                        id="review-collect-filename"
+                        placeholder="保存的文件名"
+                      />
+                    </div>
+                  </div>
+                  <div class="col-xs-2">
+                    <button class="btn" id="task-review-collect" type="button">
+                      增加任务
+                    </button>
+                  </div>
+                </div>
+                <!-- 评论收集结束 -->
+
+                <!-- 通用设置 -->
+                <div
+                  class="row collapse"
+                  id="setting"
+                  data-parent="#input-group"
+                >
+                  <div class="col-xs-10">
+                    <div class="col-xs-3">
+                      <input
+                        type="text"
+                        class="form-control"
+                        id="setting-zipcode"
+                        placeholder="zipcode"
+                      />
+                    </div>
+
+                    <div class="col-xs-3">
+                      <input
+                        type="text"
+                        class="form-control"
+                        id="setting-word-freq"
+                        placeholder="词频字段,|号分割"
+                      />
+                    </div>
+                  </div>
+                  <div class="col-xs-2">
+                    <button class="btn" id="task-setting" type="button">
+                      保存设置
+                    </button>
+                  </div>
+                </div>
+                <!-- 通用设置结束 -->
               </div>
+              <!-- 任务参数区结束 -->
+            </div>
+
+            <!-- 通用设置显示 -->
+            <div class="row">
+              <h2 class="title">通用默认设置</h2>
+              <div id="general-setting"></div>
+              <!-- <span class="label">目的邮编：{{$value.actionZipcode}}</span>
+              <span class="label">目的邮编：{{$value.actionZipcode}}</span>
+              <span class="label">目的邮编：{{$value.actionZipcode}}</span>
+              <span class="label">目的邮编：{{$value.actionZipcode}}</span>
+              <span class="label">目的邮编：{{$value.actionZipcode}}</span>
+              <span class="label">目的邮编：{{$value.actionZipcode}}</span>
+              <span class="label">目的邮编：{{$value.actionZipcode}}</span> -->
+            </div>
+            <!-- 通用设置显示结束 -->
+          </div>
+        </div>
+
+        <!-- 任务列表卡位 -->
+        <div class="row">
+          <h2 class="title">任务列表</h2>
+          <div class="row">
+            <div class="col-sm-12">
+              <ul class="list-group" id="task-list"></ul>
             </div>
           </div>
         </div>
-
-        <div class="row">
-          <div class="col-sm-12">
-            <ul class="list-group" id="task-list"></ul>
-          </div>
-        </div>
+        <!-- 任务列表卡位结束 -->
       </div>
+
+      <!-- 提示信息 -->
       <div class="modal fade" id="popupModal">
         <div class="modal-dialog">
           <div class="modal-content">
@@ -137,7 +349,18 @@
           </div>
         </div>
       </div>
+      <!-- 提示信息结束 -->
     </div>
+
+    <!-- 通用设置显示模板 -->
+    <script type="text/hmtl" id="general-setting-template">
+      {{each general_setting val key}}
+      <span class="label">{{key}}：{{val}}</span>
+      {{/each}}
+    </script>
+    <!-- 通用设置显示模板结束 -->
+
+    <!-- 任务列表显示模板 -->
     <script type="text/html" id="task-template">
       {{each task_list}}
       <li class="list-group-item">
@@ -146,7 +369,9 @@
             <span class="label label-primary">No.{{$index}}</span>
           </div>
           <div class="col-xs-9">
-            <span class="label">任务类型：{{$value.action}}</span>
+            {{each $value val key}}
+            <span class="label">{{key}}：{{val}}</span>
+            <!-- <span class="label">任务类型：{{$value.action}}</span>
             <span class="label">执行频率：{{$value.actionFreq/1000}}秒</span>
             <span class="label">执行次数：{{$value.actionTimes}}</span>
             <span class="label">关键词：{{$value.actionKV}}</span>
@@ -155,7 +380,8 @@
             <span class="label">{{$value.handler}}</span>
             <span class="label">{{$value.tabId}}</span>
             <span class="label">任务开始时间：{{$value.time}}</span>
-            <span class="label">已执行次数：{{$value.times}}</span>
+            <span class="label">已执行次数：{{$value.times}}</span> -->
+            {{/each}}
           </div>
           <div class="col-xs-1">
             <span <% if($value.state=="done") {%>class="label label-success"<%}
@@ -171,6 +397,7 @@
       </li>
       {{/each}}
     </script>
+    <!-- 任务列表显示模板结束 -->
     <script src="../js/popup.js"></script>
   </body>
 </html>

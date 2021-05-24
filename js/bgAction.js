@@ -1,4 +1,5 @@
 async function createTask(params) {
+  let action = null;
   let task = { ...params };
   task.time = Date();
   task.lastRunningTime = Date();
@@ -6,14 +7,52 @@ async function createTask(params) {
   task.times = 0;
   console.log(params);
   switch (params.action) {
-    case "asin_rank":
-      let action = await makeAction(bgGetAsinRank2, params);
+    case "asin-rank":
+      action = await makeAction(
+        getAsinRankAction,
+        params,
+        (event, param) => {
+          saveCsv(event.detail.data, param.actionFilename);
+        },
+        null
+      );
       task.times = 1;
       console.log(action);
       Object.assign(task, action);
+      taskList.push(task);
+      break;
+    case "review-collect":
+      action = await makeAction(reviewCollect, params, null, (event, param) => {
+        saveCsv(event.detail.data, param.actionFilename);
+        let collection = [];
+        for (let len = event.detail.data.length, i = 1; i < len; i++) {
+          // collection.push(event.detail.data[i]["review"]);
+          for (key of param.actionWordFreq) {
+            if (event.detail.data[i][key]) {
+              collection.push(event.detail.data[i][key].trim());
+            }
+          }
+        }
+        let words = [];
+        for (phrase of collection) {
+          words.push.apply(words, cleanWords(phrase, stopwords.en));
+        }
+        saveWordCloud(
+          wordFreq(words, "list"),
+          wordCloudOption,
+          param.actionFilename + ".jpg"
+        );
+        saveCsv(
+          wordFreq(words, "aoo"),
+          param.actionFilename + "_wordFreq" + ".csv"
+        );
+      });
+      task.times = 1;
+      console.log(action);
+      Object.assign(task, action);
+      taskList.push(task);
       break;
   }
-  taskList.push(task);
 }
 
 function taskDone(taskList, tabId) {
@@ -41,4 +80,5 @@ function setTaskTimes(taskList, tabId, timeNum) {
 
 function setTaskTimesByIndex(taskList, index, timeNum) {
   taskList[index].times = timeNum;
+  taskList[index].lastRunningTime = Date();
 }
