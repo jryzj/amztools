@@ -23,8 +23,26 @@ function json2csv(jsonList, delimiter = "\t") {
   return head + values;
 }
 
+function json2csvPlus(jsonList, delimiter = "\t") {
+  let head = [];
+  let values = "";
+  for (let i = 0, len = jsonList.length; i < len; i++) {
+    for (key in jsonList[i]) {
+      if (head.indexOf(key) == -1) {
+        head.push(key);
+      }
+    }
+    let v = [];
+    for (key of head) {
+      v.push(jsonList[i][key]);
+    }
+    values = values + v.join(delimiter) + "\n";
+  }
+  return head.join(delimiter) + "\n" + values;
+}
+
 function saveCsv(jsonList, filename, ele = document) {
-  downloadByA(ele, filename, json2csv(jsonList));
+  downloadByA(ele, filename, json2csvPlus(jsonList));
 }
 
 function setFileOverwrite() {
@@ -48,13 +66,14 @@ function setFileOverwrite() {
 function cleanWords(
   paragraph,
   stopwords,
-  selector = ["noun", "verb", "adverb", "adjective"]
+  wordExcept,
+  selector = ["noun", "verb", "adverb", "adjective", "number"]
 ) {
   //selector: list
   //[noun, noun_adjective, verb, adverb]
   //adjective
   let words = [];
-  let doc = nlp(paragraph);
+  let doc = nlp(paragraph.toLowerCase());
   for (sel of selector) {
     switch (sel) {
       case "noun":
@@ -77,10 +96,19 @@ function cleanWords(
 
   let retWords = [];
   for (word of words) {
-    word = word.toLowerCase().replace(/\W+/g, "");
+    word = word.replace(wordPunctuationRule, "");
     if (word == "") continue;
-    if (stopwords.indexOf(word) == -1) {
-      retWords.push(word);
+    if (stopwords.indexOf(word) != -1) continue;
+    if (wordExcept.indexOf(word) != -1) continue;
+    retWords.push(word);
+  }
+
+  if (selector.indexOf("number") != -1) {
+    let numbers = doc.numbers().out("array");
+    for (n of numbers) {
+      if (wordExcept.indexOf(n) == -1) {
+        retWords.push(n);
+      }
     }
   }
 
@@ -118,40 +146,43 @@ function wordFreq(wordList, type) {
   return wRet;
 }
 
-function saveWordCloud(data, option, filename, container = document) {
-  let options = {
-    list: data,
-  };
-  Object.assign(options, option);
+async function saveWordCloud(data, option, filename, container = document) {
+  return new Promise((res, rej) => {
+    let options = {
+      list: data,
+    };
+    Object.assign(options, option);
 
-  // let canvas = container.createElement("canvas");
-  let canvas = $("<canvas>")[0];
-  canvas.width = 1920;
-  canvas.height = 1080;
+    // let canvas = container.createElement("canvas");
+    let canvas = $("<canvas>")[0];
+    canvas.width = 1920;
+    canvas.height = 1080;
 
-  let maxSize = 1;
-  for (d of options.list) {
-    if (d[1] > maxSize) {
-      maxSize = d[1];
+    let maxSize = 1;
+    for (d of options.list) {
+      if (d[1] > maxSize) {
+        maxSize = d[1];
+      }
     }
-  }
 
-  if (canvas.height > maxSize * 6) {
-    options.weightFactor = 6;
-  } else {
-    options.weightFactor = canvas.height / maxSize / 6;
-  }
+    if (canvas.height > maxSize * 6) {
+      options.weightFactor = 6;
+    } else {
+      options.weightFactor = canvas.height / maxSize / 6;
+    }
 
-  // document.body.appendChild(canvas);
-  // $(document).append(canvas);
-  WordCloud(canvas, options);
+    // document.body.appendChild(canvas);
+    // $(document).append(canvas);
+    WordCloud(canvas, options);
 
-  // let a = container.createElement("a");
-  $(canvas).one("wordcloudstop", function () {
-    let a = $("<a>")[0];
-    a.href = canvas.toDataURL("image/jpeg");
-    a.download = filename;
-    a.click();
-    console.log("wordcloudstop");
+    // let a = container.createElement("a");
+    $(canvas).one("wordcloudstop", function () {
+      let a = $("<a>")[0];
+      a.href = canvas.toDataURL("image/jpeg");
+      a.download = filename;
+      a.click();
+      console.log("wordcloudstop");
+      res();
+    });
   });
 }

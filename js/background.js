@@ -4,6 +4,7 @@ var taskList = [];
 //task {tabid: handler}
 
 setFileOverwrite();
+nlp.extend(compromiseNumbers);
 
 // let task = bgGetAsinRank1("yoga mat", 60000);
 // bgGetAsinRank("skateboard");

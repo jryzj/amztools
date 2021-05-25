@@ -23,6 +23,7 @@ const ACT_SEL = {
     slMain_pic: "#imageBlock_feature_div .selected img",
     slRating_num: "#acrCustomerReviewText",
     slStar: "#acrPopover i span",
+    slAllDescription: "div[id*=description]",
   },
   // for asin on page
   asinOnPages: {
@@ -60,11 +61,16 @@ const ACT_SEL = {
     slHref: '[data-hook="review-title"]',
     //# 'global_rating_reviews': '[data-hook="cr-filter-info-review-rating-count"] span'
   },
+  bestSeller:{
+    slAllAsinLink: "#zg-ordered-list li span.zg-item>.a-link-normal",
+    rAsin: /\/dp\/(\w+)\//, //捕获组1，即第二个
+  }
 };
 
 const webbase = "https://www.amazon.com";
 const searchPath = "/s?k=";
 const asinBase = webbase + "/dp/";
+const bestSellerBase = webbase + "/bestsellers/";
 const antiRobot =
   "To discuss automated access to Amazon data please contact api-services-support@amazon.com.";
 const lang = "language=en_US"; // not ?language=en_US
@@ -72,6 +78,27 @@ const curNLand = "https://www.amazon.com/?currency=USD&language=en_US";
 const ref = "&ref=nb_sb_noss"; // from north american?
 const maxAsinPage = Infinity; //7
 const pageWaitingMs = 3000;
+const wordPunctuationRule = /[^\w'/"]+/g;
+const punctuationMark = [
+  ",",
+  ";",
+  ":",
+  ".",
+  "!",
+  "?",
+  "'",
+  '"',
+  "-",
+  "_",
+  "/",
+  "(",
+  ")",
+  "[",
+  "]",
+  "{",
+  "}",
+  "*",
+];
 
 var wordCloudOption = {
   gridSize: 8, // size of the grid in pixels

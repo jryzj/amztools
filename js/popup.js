@@ -109,6 +109,7 @@ $(document).ready(function () {
     let actionTimes = 1;
     let actionMaxPage = $("#review-collect-maxpage").val();
     let actionWordFreq = $("#review-collect-word-freq").val();
+    let actionWordExcept = $("#review-collect-word-except").val();
     let actionZipcode = generalSetting.zipcode;
     let actionFilename = $("#review-collect-filename").val();
     console.log(
@@ -116,6 +117,7 @@ $(document).ready(function () {
       actionAsin,
       actionMaxPage,
       actionWordFreq,
+      actionWordExcept,
       actionZipcode,
       actionFilename
     );
@@ -134,6 +136,12 @@ $(document).ready(function () {
       actionWordFreq = generalSetting.wordFreq;
     } else {
       actionWordFreq = actionWordFreq.trim().toLowerCase().split("|");
+    }
+
+    if (actionWordExcept.trim() == "") {
+      actionWordExcept = [];
+    } else {
+      actionWordExcept = actionWordExcept.trim().toLowerCase().split("|");
     }
 
     if (actionFilename == "") {
@@ -157,6 +165,7 @@ $(document).ready(function () {
         actionAsin,
         actionTimes,
         actionMaxPage,
+        actionWordExcept,
         actionWordFreq,
         actionFilename,
         actionZipcode,

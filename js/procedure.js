@@ -195,7 +195,7 @@ function makeAction(func, param, doAfterEveryBatch, doBeforeEnd) {
       let timeNum = 1;
       let data = [];
 
-      document.addEventListener("task end", (event) => {
+      document.addEventListener("task end", async (event) => {
         if (event.detail.tabId == tabId) {
           if (doAfterEveryBatch) {
             doAfterEveryBatch(event, param);
@@ -207,7 +207,7 @@ function makeAction(func, param, doAfterEveryBatch, doBeforeEnd) {
             //   doBeforeEnd(event, param);
             // }
 
-            doBeforeEnd && doBeforeEnd(event, param);
+            await doBeforeEnd && doBeforeEnd(event, param);
 
             console.log("one task finished, clear");
             taskDone(taskList, tabId);
