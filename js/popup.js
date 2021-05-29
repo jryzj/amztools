@@ -173,6 +173,71 @@ $(document).ready(function () {
     }
   });
 
+  //QA收集
+  $("#task-QA-collect").click(function () {
+    let msg = "";
+    console.log("task-QA-collect");
+    let action = $("#action").val();
+    let actionAsin = $("#QA-collect-asin").val();
+    let actionTimes = 1;
+    let actionMaxPage = $("#QA-collect-maxpage").val();
+    let actionWordExcept = $("#QA-collect-word-except").val();
+    let actionZipcode = generalSetting.zipcode;
+    let actionFilename = $("#QA-collect-filename").val();
+    console.log(
+      action,
+      actionAsin,
+      actionTimes,
+      actionMaxPage,
+      actionWordExcept,
+      actionZipcode,
+      actionFilename
+    );
+    if (action == "") {
+      msg += "必须选择任务。\r\n";
+    }
+    if (actionAsin == "") {
+      msg += "asin必须输入。\r\n";
+    }
+
+    if (isNaN(parseInt(actionMaxPage)) || parseInt(actionMaxPage) == 0) {
+      actionMaxPage = generalSetting.maxPage;
+    }
+
+    if (actionWordExcept.trim() == "") {
+      actionWordExcept = [];
+    } else {
+      actionWordExcept = actionWordExcept.trim().toLowerCase().split("|");
+    }
+
+    if (actionFilename == "") {
+      actionFilename =
+        generalSetting.filename +
+        new Date().getTime() +
+        "." +
+        generalSetting.fileExt;
+    } else {
+      let reg = new RegExp('[\\\\/:*?"<>|]');
+      if (reg.test(actionFilename)) {
+        msg += "文件名不能包括特殊字符";
+      }
+    }
+    if (msg != "") {
+      $("#popupMsg").text(msg);
+      $("#popupModal").modal("toggle", "center");
+    } else {
+      bg.createTask({
+        action,
+        actionAsin,
+        actionTimes,
+        actionMaxPage,
+        actionWordExcept,
+        actionFilename,
+        actionZipcode,
+      });
+    }
+  });
+
   //通用设置
   $("#task-setting").click(function () {
     let msg = "";

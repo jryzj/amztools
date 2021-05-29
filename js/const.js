@@ -16,14 +16,18 @@ const ACT_SEL = {
   asinPage: {
     slTitle: "#productTitle",
     slSizes: "#variation_size_name ul li .a-size-base",
-    slColors: "#variation_color_name ul li[title]",
-    aColors: "title",
+    slColors: "#variation_color_name ul li[title] img",
+    aColors: "alt",
     rColor: "Click to select ",
-    slBullets: "#feature-bullets ul li .a-list-item",
+    slBullets: "#feature-bullets ul li:not[id] .a-list-item",
     slMain_pic: "#imageBlock_feature_div .selected img",
     slRating_num: "#acrCustomerReviewText",
-    slStar: "#acrPopover i span",
-    slAllDescription: "div[id*=description]",
+    slStar: "#acrPopover i span", //[0]
+    slProductDescription: "div[id*=description] p,table", //text().trim().replace(/\s{2,}|\n+/g,",")
+    slProductInformation: "#productDetails_detailBullets_sections1", //text().trim().replace(/\s{2,}|\n+/g,",")
+    slProductDetails: "#detailBulletsWrapper_feature_div li", //text().trim().replace(/\s{2,}|\n+/g,",")
+    slBestSellerRank: "a[href*='/gp/bestsellers/']:not([class]", //$("a[href*='/gp/bestsellers/']:not([class]").parentsUntil(":contains(Best Seller)").parent().text().replace(/\n+/g, " ")
+    slProductOverView: "productOverview_feature_div", //$("#productOverview_feature_div tr").text().replace(/\n+/g," ")
   },
   // for asin on page
   asinOnPages: {
@@ -61,16 +65,44 @@ const ACT_SEL = {
     slHref: '[data-hook="review-title"]',
     //# 'global_rating_reviews': '[data-hook="cr-filter-info-review-rating-count"] span'
   },
-  bestSeller:{
+  allQA: {
+    slAllQADiv: ".a-section.askTeaserQuestions",
+    slQADivs: ".a-section.askTeaserQuestions>.a-fixed-left-grid.a-spacing-base", //based on document
+    slQ: "[id*=question] a", //innerText
+    slADiv: ".a-fixed-left-grid.a-spacing-base", //based on slQADiv, innerText
+    slA: ".a-fixed-left-grid-col.a-col-right span",
+    slASeeAll: "a:contains(See)", //based on slADiv
+    slVote: ".count",
+    // slQNext: "#askPaginationBar .a-last a",
+    //see all answer pages
+    slAQ: "p.askAnswersAndComments span",
+    slAAllA: "[id^=answer]>span",
+    // slANext: "#askPaginationBar .a-last a",
+  },
+  bestSeller: {
     slAllAsinLink: "#zg-ordered-list li span.zg-item>.a-link-normal",
     rAsin: /\/dp\/(\w+)\//, //捕获组1，即第二个
-  }
+  },
+  categoryBestSeller: {},
+  searchBarKV: {
+    slSuggestionDiv: "",
+    slCategory: ".s-suggestion[data-type=a9-xcat]",
+    slKV: ".s-suggestion[data-type=a9]",
+  },
 };
 
 const webbase = "https://www.amazon.com";
 const searchPath = "/s?k=";
-const asinBase = webbase + "/dp/";
+const asinBase = webbase + "/dp";
+const productReview = webbase + "/product-reviews";
+const productReviewType = "?reviewerType=all_reviews";
 const bestSellerBase = webbase + "/bestsellers/";
+const QAbase = webbase + "/ask/questions/asin";
+const isAnswered = "isAnswered=true";
+const categoryBestSeller = webbase + "/Best-Sellers/zgbs";
+const categoryBestSellerSub = categoryBestSeller;
+const categoryNewRelese = webbase + "/gp/new-releases";
+const categoryNewReleseSub = categoryNewRelese;
 const antiRobot =
   "To discuss automated access to Amazon data please contact api-services-support@amazon.com.";
 const lang = "language=en_US"; // not ?language=en_US
