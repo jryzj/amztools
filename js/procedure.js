@@ -67,7 +67,7 @@ function* reviewCollect(tabId, params, data) {
   //   params: asinBase + params.actionAsin + "/?" + lang,
   // });
   chrome.tabs.update(tabId, {
-    url: asinBase + params.actionAsin + "/?" + lang,
+    url: asinBase + "/" + params.actionAsin + "/?" + lang,
   });
 
   ret = yield;
@@ -97,7 +97,7 @@ function* reviewCollect(tabId, params, data) {
           params: ["html", ACT_SEL.allReviews.slAllReviews],
         });
 
-        console.log("alreviewCollect", getReviewOnPage(ret));
+        console.log("allreviewCollect", getReviewOnPage(ret));
 
         data.push.apply(data, getReviewOnPage(ret));
 
@@ -117,6 +117,108 @@ function* reviewCollect(tabId, params, data) {
   }
 
   console.log("reviewCollect 1 time end");
+  document.dispatchEvent(
+    new CustomEvent("task end", {
+      detail: {
+        tabId: tabId,
+        data: data,
+      },
+    })
+  );
+}
+
+function* QACollect(tabId, params, data) {
+  let maxPage = params.actionMaxPage || maxAsinPage;
+  let currentPage = 1;
+  let ret;
+  let currentUrl;
+
+  //go url
+  chrome.tabs.update(tabId, {
+    url: QAbase + "/" + params.actionAsin + "/?" + isAnswered + "&" + lang,
+  });
+
+  ret = yield;
+
+  if (ret.pageAvailable) {
+    //change location
+    yield postMsg(tabId, {
+      amzAction: "changeLocation",
+      params: params.actionZipcode,
+    });
+    while (currentPage <= maxPage) {
+      currentUrl = chrome.tabs.get(tabId, (tab) => (currentUrl = tab.url));
+      ret = yield postMsg(tabId, {
+        amzAction: "content",
+        params: ["html", ACT_SEL.allQA.slAllQADiv],
+      });
+      currentPage++;
+      //pase QA list page
+      ret = getAllQAonPage(ret);
+      if (ret.QAList.length > 0) {
+        data.push.apply(data, ret.QAList);
+      }
+
+      //if many Q have more answer, parse one by one
+      if (ret.hasAllA.length > 0) {
+        let rret;
+        for (let ques of ret.hasAllA) {
+          let aContent = "";
+
+          postMsg(tabId, {
+            amzAction: "goUrl",
+            params: webbase + ques.url,
+          });
+          rret = yield;
+          while (true) {
+            if (rret.pageAvailable) {
+              rret = yield postMsg(tabId, {
+                amzAction: "content",
+                params: ["html", ACT_SEL.allQA.slAQ],
+              });
+
+              //parse one QA page
+              rret = getQAonPage(rret);
+              aContent = aContent + rret;
+
+              postMsg(tabId, { amzAction: "goNextPage" });
+
+              rret = yield;
+              if (!rret.pageAvailable) {
+                yield postMsg(tabId, {
+                  amzAction: "goUrl",
+                  params: currentUrl,
+                });
+                break;
+              }
+              //if has more answer, continue
+            } else {
+              if (rret.reason == "anti robot") {
+                //
+                yield;
+              } else if (rret.reason == "not N/A") {
+                //
+              }
+            }
+          }
+          data.push({
+            question: ques.question,
+            answer: aContent,
+            vote: ques.vote,
+          });
+        }
+      }
+
+      ret = yield postMsg(tabId, { amzAction: "goNextPage" });
+      if (!ret.pageAvailable) {
+        break;
+      }
+    }
+  } else {
+    data.push({ error: "asin or QA is N/A." });
+  }
+
+  console.log("QACollect 1 time end");
   document.dispatchEvent(
     new CustomEvent("task end", {
       detail: {
@@ -195,7 +297,7 @@ function makeAction(func, param, doAfterEveryBatch, doBeforeEnd) {
       let timeNum = 1;
       let data = [];
 
-      document.addEventListener("task end", (event) => {
+      document.addEventListener("task end", async (event) => {
         if (event.detail.tabId == tabId) {
           if (doAfterEveryBatch) {
             doAfterEveryBatch(event, param);
@@ -207,7 +309,7 @@ function makeAction(func, param, doAfterEveryBatch, doBeforeEnd) {
             //   doBeforeEnd(event, param);
             // }
 
-            doBeforeEnd && doBeforeEnd(event, param);
+            (await doBeforeEnd) && doBeforeEnd(event, param);
 
             console.log("one task finished, clear");
             taskDone(taskList, tabId);

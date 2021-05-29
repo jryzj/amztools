@@ -28,7 +28,7 @@ chrome.runtime.onMessage.addListener(async function (req, sender, callback) {
         content = await amzContent(req.params[0], req.params[1], 3000);
         sendMsg("done", content);
         break;
-      case "goNextPage":   //ajax fresh page, not reload page
+      case "goNextPage":   //ajax fresh page, not reload page!!!
         console.log("here goNextPage");
         hasPage = await amzGoNextPage();
         sendMsg("ready", hasPage);

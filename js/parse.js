@@ -160,3 +160,41 @@ function getReviewOnPage(page) {
   }
   return reviewList;
 }
+
+function getAllQAonPage(page) {
+  let QAList = [];
+  let hasAllA = [];
+  let qPage = $(page);
+  let QAs = $(ACT_SEL.allQA.slQADivs, qPage);
+  for (let oneQA of QAs) {
+    let ADiv = $(ACT_SEL.allQA.slADiv, oneQA);
+    if ($(ACT_SEL.allQA.slASeeAll, ADiv).length > 0) {
+      hasAllA.push({
+        question: $(ACT_SEL.allQA.slQ, oneQA)[0].textContent.trim(),
+        vote: $(ACT_SEL.allQA.slVote, oneQA)[0].textContent,
+        url:
+          $(ACT_SEL.allQA.slASeeAll, ADiv)[0].pathname +
+          $(ACT_SEL.allQA.slASeeAll, ADiv)[0].search,
+      });
+    } else {
+      QAList.push({
+        question: $(ACT_SEL.allQA.slQ, oneQA)[0].textContent.trim(),
+        answer: $(ACT_SEL.allQA.slA, ADiv)[0].textContent.trim(),
+        vote: $(ACT_SEL.allQA.slVote, oneQA)[0].textContent,
+      });
+    }
+  }
+  return { QAList, hasAllA };
+}
+
+function getQAonPage(page) {
+  let aContent = "";
+  let qPage = $(page);
+  let answers = $(ACT_SEL.allQA.slAAllA, qPage);
+  for (let a of answers) {
+    aContent = aContent + a.textContent + "***";
+  }
+  // let hasNext = $(ACT_SEL.slNextPageBtn, qPage).length > 0 ? true : false;
+  // return { answer: aContent, hasNext: hasNext };
+  return aContent;
+}

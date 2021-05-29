@@ -22,31 +22,92 @@ async function createTask(params) {
       taskList.push(task);
       break;
     case "review-collect":
-      action = await makeAction(reviewCollect, params, null, (event, param) => {
-        saveCsv(event.detail.data, param.actionFilename);
-        let collection = [];
-        for (let len = event.detail.data.length, i = 1; i < len; i++) {
-          // collection.push(event.detail.data[i]["review"]);
-          for (key of param.actionWordFreq) {
-            if (event.detail.data[i][key]) {
-              collection.push(event.detail.data[i][key].trim());
+      action = await makeAction(
+        reviewCollect,
+        params,
+        null,
+        async (event, param) => {
+          return new Promise(async (res, rej) => {
+            saveCsv(event.detail.data, param.actionFilename);
+
+            //for wordcloud
+            let collection = [];
+            for (let len = event.detail.data.length, i = 1; i < len; i++) {
+              // collection.push(event.detail.data[i]["review"]);
+              for (key of param.actionWordFreq) {
+                if (event.detail.data[i][key]) {
+                  collection.push(event.detail.data[i][key].trim());
+                }
+              }
             }
-          }
+            let words = [];
+            for (phrase of collection) {
+              words.push.apply(
+                words,
+                cleanWords(phrase, stopwords.en, param.actionWordExcept)
+              );
+            }
+            await saveWordCloud(
+              wordFreq(words, "list"),
+              wordCloudOption,
+              param.actionFilename + ".jpg"
+            );
+            saveCsv(
+              wordFreq(words, "aoo"),
+              param.actionFilename + "_wordFreq" + ".csv"
+            );
+            res();
+          });
         }
-        let words = [];
-        for (phrase of collection) {
-          words.push.apply(words, cleanWords(phrase, stopwords.en));
+      );
+      task.times = 1;
+      console.log(action);
+      Object.assign(task, action);
+      taskList.push(task);
+
+      break;
+    case "QA-collect":
+      action = await makeAction(
+        QACollect,
+        params,
+        null,
+        async (event, param) => {
+          return new Promise(async (res, rej) => {
+            saveCsv(event.detail.data, param.actionFilename);
+
+            //for wordcloud
+            let collection = [];
+            for (let len = event.detail.data.length, i = 1; i < len; i++) {
+              // collection.push(event.detail.data[i]["review"]);
+              // for (key of param.actionWordFreq) {
+              //   if (event.detail.data[i][key]) {
+              //     collection.push(event.detail.data[i][key].trim());
+              //   }
+              // }
+
+              collection.push(event.detail.data[i]["question"].trim());
+              collection.push(event.detail.data[i]["answer"].trim());
+            }
+            let words = [];
+            for (phrase of collection) {
+              words.push.apply(
+                words,
+                cleanWords(phrase, stopwords.en, param.actionWordExcept)
+              );
+            }
+            await saveWordCloud(
+              wordFreq(words, "list"),
+              wordCloudOption,
+              param.actionFilename + ".jpg"
+            );
+            saveCsv(
+              wordFreq(words, "aoo"),
+              param.actionFilename + "_wordFreq" + ".csv"
+            );
+            res();
+          });
         }
-        saveWordCloud(
-          wordFreq(words, "list"),
-          wordCloudOption,
-          param.actionFilename + ".jpg"
-        );
-        saveCsv(
-          wordFreq(words, "aoo"),
-          param.actionFilename + "_wordFreq" + ".csv"
-        );
-      });
+      );
       task.times = 1;
       console.log(action);
       Object.assign(task, action);
