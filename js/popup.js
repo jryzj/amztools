@@ -238,6 +238,53 @@ $(document).ready(function () {
     }
   });
 
+  //hotKV收集
+  $("#task-hotKV-collect").click(function () {
+    let msg = "";
+    console.log("task-hotkKV-collect");
+    let action = $("#action").val();
+    let actionKV = $("#hotKV-collect-kv").val();
+    let actionTimes = 1;
+    let actionMaxNum = $("#hotKV-collect-maxNum").val();
+    let actionZipcode = generalSetting.zipcode;
+    let actionFilename = $("#hotKV-collect-filename").val();
+    console.log(action, actionKV, actionMaxNum, actionZipcode, actionFilename);
+    if (action == "") {
+      msg += "必须选择任务。\r\n";
+    }
+    if (actionKV == "") {
+      msg += "关键词必须输入。\r\n";
+    }
+
+    if (actionMaxNum == "") actionMaxNum = Infinity;
+
+    if (actionFilename == "") {
+      actionFilename =
+        generalSetting.filename +
+        new Date().getTime() +
+        "." +
+        generalSetting.fileExt;
+    } else {
+      let reg = new RegExp('[\\\\/:*?"<>|]');
+      if (reg.test(actionFilename)) {
+        msg += "文件名不能包括特殊字符";
+      }
+    }
+    if (msg != "") {
+      $("#popupMsg").text(msg);
+      $("#popupModal").modal("toggle", "center");
+    } else {
+      bg.createTask({
+        action,
+        actionKV,
+        actionTimes,
+        actionMaxNum,
+        actionZipcode,
+        actionFilename,
+      });
+    }
+  });
+
   //通用设置
   $("#task-setting").click(function () {
     let msg = "";

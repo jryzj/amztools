@@ -229,6 +229,134 @@ function* QACollect(tabId, params, data) {
   );
 }
 
+function* hotKVCollectDFS(tabId, params, data) {
+  let ret;
+  let maxNum = params.actionMaxNum || Infinity;
+  let currentNum = 0;
+  let stack = [];
+  //go url
+  chrome.tabs.update(tabId, { url: webbase + "/?" + lang });
+
+  ret = yield;
+
+  if (ret.pageAvailable) {
+    //change location
+    yield postMsg(tabId, {
+      amzAction: "changeLocation",
+      params: params.actionZipcode,
+    });
+    stack.push({ level: "0", kv: params.actionKV, isFilled: false });
+    while (currentNum < maxNum) {
+      let currentKV = stack[stack.length - 1];
+      if (currentKV == undefined) break;
+      if (currentKV.isFilled) {
+        data.unshift(stack.pop());
+        continue;
+      }
+      currentKV.isFilled = true;
+
+      postMsg(tabId, {
+        amzAction: "fillSearchBar",
+        params: currentKV.kv,
+      });
+
+      ret = yield;
+
+      // parse suggestions
+      ret = getHotKV(ret);
+
+      if (ret.length == 0 || (ret.length == 1 && ret[0] == currentKV.kv)) {
+        data.unshift(stack.pop());
+      } else {
+        let index = 1;
+        for (let kv of ret) {
+          if (kv == currentKV.kv) continue;
+          currentNum++;
+          stack.push({ level: currentKV.level + "-" + index, kv: kv });
+          index++;
+        }
+      }
+    }
+  } else {
+    data.push({ error: "asin or QA is N/A." });
+  }
+
+  for (let len = stack.length; len > 0; len--) {
+    data.unshift(stack.pop());
+  }
+  console.log("hotkv collect 1 time end");
+  document.dispatchEvent(
+    new CustomEvent("task end", {
+      detail: {
+        tabId: tabId,
+        data: data,
+      },
+    })
+  );
+}
+
+function* hotKVCollectBFS(tabId, params, data) {
+  let ret;
+  let maxNum = params.actionMaxNum || Infinity;
+  let currentNum = 1;
+  let stack1 = [],
+    stack2 = [];
+
+  //go url
+  chrome.tabs.update(tabId, { url: webbase + "/?" + lang });
+
+  ret = yield;
+
+  if (ret.pageAvailable) {
+    //change location
+    yield postMsg(tabId, {
+      amzAction: "changeLocation",
+      params: params.actionZipcode,
+    });
+    data.push({ level: "0", kv: params.actionKV });
+    stack1[0] = data[0];
+    doneloop: while (currentNum < maxNum) {
+      for (let currentKV of stack1) {
+        postMsg(tabId, {
+          amzAction: "fillSearchBar",
+          params: currentKV.kv,
+        });
+
+        ret = yield;
+
+        // parse suggestions
+        ret = getHotKV(ret);
+
+        let index = 1;
+        for (let kv of ret) {
+          if (kv == currentKV.kv) continue;
+          data.push({ level: currentKV.level + "-" + index, kv: kv });
+          stack2.push(data[data.length - 1]);
+          index++;
+          currentNum++;
+          console.log(currentNum);
+          if (currentNum >= maxNum) break doneloop;
+        }
+      }
+      if (stack2.length == 0) break;
+      stack1 = stack2;
+      stack2 = [];
+    }
+  } else {
+    data.push({ error: "asin or QA is N/A." });
+  }
+
+  console.log("hotkv collect 1 time end");
+  document.dispatchEvent(
+    new CustomEvent("task end", {
+      detail: {
+        tabId: tabId,
+        data: data,
+      },
+    })
+  );
+}
+
 function rxMsgHandler(tabId, task) {
   return function (req, sender, callback) {
     // console.log("message from content-script:", req, sender, callback);
@@ -317,7 +445,7 @@ function makeAction(func, param, doAfterEveryBatch, doBeforeEnd) {
         }
       });
       makeTask(func, param, tabId, data);
-      if (param.actionTimes != 1) {
+      if (param.actionTimes > 1) {
         let handler = setInterval(
           function () {
             timeNum++;
@@ -344,6 +472,7 @@ async function makeTask(func, params, tabId, data) {
   document.addEventListener("task end", (e) => {
     if (e.detail.tabId == tabId) {
       chrome.runtime.onMessage.removeListener(cb);
+      task = null;
       // clearInterval(handler);
     }
   });

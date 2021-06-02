@@ -88,6 +88,7 @@ const ACT_SEL = {
     slSuggestionDiv: "",
     slCategory: ".s-suggestion[data-type=a9-xcat]",
     slKV: ".s-suggestion[data-type=a9]",
+    slSearchBarAjax: "#nav-flyout-searchAjax",
   },
 };
 

@@ -23,17 +23,17 @@ chrome.runtime.onMessage.addListener(async function (req, sender, callback) {
         // await pageWaiting();
         // callback("test done!");
         break;
-      case "content":   //not fresh page
+      case "content": //not fresh page
         console.log("here content");
         content = await amzContent(req.params[0], req.params[1], 3000);
         sendMsg("done", content);
         break;
-      case "goNextPage":   //ajax fresh page, not reload page!!!
+      case "goNextPage": //ajax fresh page, not reload page!!!
         console.log("here goNextPage");
         hasPage = await amzGoNextPage();
         sendMsg("ready", hasPage);
         break;
-      case "changeLocation":  //realy fresh page, load page
+      case "changeLocation": //realy fresh page, load page
         console.log("here changeLocation");
         await amzChangeLocation(req.params);
         // await pageWaiting();
@@ -50,7 +50,12 @@ chrome.runtime.onMessage.addListener(async function (req, sender, callback) {
         sendMsg("ready", hasPage);
         break;
       case "reload":
+        break;
 
+      case "fillSearchBar":
+        console.log("here fill search bar");
+        await amzFillSearchBar(req.params);
+        sendMsg("done", suggestions.outerHTML);
         break;
       default:
         console.log("no amzAction.");

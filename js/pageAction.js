@@ -123,6 +123,22 @@ async function amzSearch(kv) {
   $(ACT_SEL.slSearchBtn).click();
 }
 
+async function amzFillSearchBar(kv) {
+  return new Promise(async (res, rej) => {
+    await sureReady(ACT_SEL.slSearchBar);
+    $(ACT_SEL.slSearchBar).val(kv);
+    simlateFocus($(ACT_SEL.slSearchBar)[0]);
+    let config = { childList: true, subtree: true, attributes: true };
+    let mo = new MutationObserver((m) => {
+      if (suggestions) {
+        mo.disconnect();
+        res();
+      }
+    });
+    mo.observe($(ACT_SEL.searchBarKV.slSearchBarAjax)[0], config);
+  });
+}
+
 async function amzContent(sel, eleFlag, gapTime = 1000) {
   await sureReady(eleFlag, gapTime);
   await pageWaiting();
@@ -188,4 +204,10 @@ async function amzChangeLocation(
   $(ACT_SEL.slDoneBtn, container).click();
   window.location.reload();
   await pageWaiting();
+}
+
+function simlateFocus(ele) {
+  let evt = document.createEvent("HTMLEvents");
+  evt.initEvent("focus", true, true);
+  ele.dispatchEvent(evt);
 }

@@ -198,3 +198,14 @@ function getQAonPage(page) {
   // return { answer: aContent, hasNext: hasNext };
   return aContent;
 }
+
+function getHotKV(suggestions) {
+  let qPage = $(suggestions);
+  let kvs = [];
+
+  let divs = $(ACT_SEL.searchBarKV.slKV, qPage);
+  for (let div of divs) {
+    kvs.push(div.innerText.trim());
+  }
+  return kvs;
+}

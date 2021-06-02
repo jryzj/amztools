@@ -113,6 +113,23 @@ async function createTask(params) {
       Object.assign(task, action);
       taskList.push(task);
       break;
+    case "hotKV-collect":
+      action = await makeAction(
+        hotKVCollectBFS,
+        params,
+        null,
+        async (event, param) => {
+          return new Promise(async (res, rej) => {
+            saveCsv(event.detail.data, param.actionFilename);
+            res();
+          });
+        }
+      );
+      task.times = 1;
+      console.log(action);
+      Object.assign(task, action);
+      taskList.push(task);
+      break;
   }
 }
 
