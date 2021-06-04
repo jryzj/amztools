@@ -327,6 +327,14 @@ $(document).ready(function () {
     }
   });
 
+  //清除cookie
+  $("#task-clear-cookie").click(function () {
+    let action = "clear-cookie";
+    bg.createTask({action})
+    // bg.clearCookie();
+    // bg.taskNotification({ message: "cookie清除完毕！" });
+  });
+
   $(".num").on("input", function () {
     $(this).val(
       $(this)

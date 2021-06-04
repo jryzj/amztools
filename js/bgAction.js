@@ -121,6 +121,10 @@ async function createTask(params) {
         async (event, param) => {
           return new Promise(async (res, rej) => {
             saveCsv(event.detail.data, param.actionFilename);
+            taskNotification({
+              message:
+                `任务：${params.action}\n关键词：${params.actionKV}\n执行完毕!`,
+            });
             res();
           });
         }
@@ -129,6 +133,10 @@ async function createTask(params) {
       console.log(action);
       Object.assign(task, action);
       taskList.push(task);
+      break;
+    case "clear-cookie":
+      clearCookie();
+      taskNotification({ message: "cookie清除完毕！" });
       break;
   }
 }

@@ -19,7 +19,7 @@ const ACT_SEL = {
     slColors: "#variation_color_name ul li[title] img",
     aColors: "alt",
     rColor: "Click to select ",
-    slBullets: "#feature-bullets ul li:not[id] .a-list-item",
+    slBullets: "#feature-bullets ul li:not([id]) .a-list-item",
     slMain_pic: "#imageBlock_feature_div .selected img",
     slRating_num: "#acrCustomerReviewText",
     slStar: "#acrPopover i span", //[0]
@@ -53,6 +53,7 @@ const ACT_SEL = {
     slSelf: '[data-hook="see-all-reviews-link-foot"]',
     slAllReviews: '#cm_cr-review_list [data-hook="review"]',
     slName: ".a-profile-name",
+    slBadge: ".badges-genome-widget", //vine voice
     slRating: '[data-hook="review-star-rating"] span',
     rRating: " out of 5 stars",
     slTitle: '[data-hook="review-title"]',
@@ -60,6 +61,7 @@ const ACT_SEL = {
     rCountry: "Reviewed in ",
     slFormatStrip: '[data-hook="format-strip"]',
     rFormatStrip: /<i.*i>/,
+    slVineReview: ".a-color-success.a-text-bold",
     slAvp: '[data-hook="avp-badge"]',
     slContent: '[data-hook="review-body"]',
     slHref: '[data-hook="review-title"]',
@@ -93,6 +95,7 @@ const ACT_SEL = {
 };
 
 const webbase = "https://www.amazon.com";
+const webdomain = ".amazon.com";
 const searchPath = "/s?k=";
 const asinBase = webbase + "/dp";
 const productReview = webbase + "/product-reviews";

@@ -480,3 +480,31 @@ async function makeTask(func, params, tabId, data) {
   task.next();
   console.log("tabId", tabId);
 }
+
+function clearCookie() {
+  chrome.cookies.getAll({ domain: webdomain }, function (cookieList) {
+    for (cookie of cookieList) {
+      chrome.cookies.remove({
+        url: "https://" + cookie.domain + cookie.path,
+        name: cookie.name,
+      });
+    }
+  });
+}
+
+function taskNotification(options, id = null) {
+  chrome.notifications.create(
+    id,
+    {
+      type: options.type || "basic",
+      iconUrl: options.icon || "../img/baic128.png",
+      title: options.title || "Notificaiton",
+      message: options.message || "Message",
+    },
+    function (context) {
+      if (options.cb) {
+        options.cb(context);
+      }
+    }
+  );
+}
