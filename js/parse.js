@@ -129,12 +129,13 @@ function getReviewOnPage(page) {
     let date_country = $($(ACT_SEL.allReviews.slDateCoutry, review)[0])
       .text()
       .replace(ACT_SEL.allReviews.rCountry, "")
-      .replace(",", "")
-      .split(" ");
+      .replace(",", " ")
+      .trim()
+      .split(/\s+/);
     info["month"] = date_country[date_country.length - 3];
     info["day"] = date_country[date_country.length - 2];
     info["year"] = date_country[date_country.length - 1];
-    info["country"] = date_country.slice(0, date_country.length - 5).join(" ");
+    info["country"] = date_country.slice(0, date_country.length - 4).join(" ");
 
     let format_strip = $($(ACT_SEL.allReviews.slFormatStrip, review)[0]).html();
 
@@ -155,6 +156,12 @@ function getReviewOnPage(page) {
       .replace(/\s+/g, " ");
     info["href"] = $($(ACT_SEL.allReviews.slHref, review)[0]).attr("href");
     // if (info["href"]) info["href"] = self.web_base + info["href"];
+
+    let vineBagde = $($(ACT_SEL.allReviews.slBadge, review)[0]);
+    if (vineBagde) info["vine voice"] = vineBagde.text().trim();
+
+    let vineReview = $($(ACT_SEL.allReviews.slVineReview, review)[0]);
+    if (vineReview) info["vine review"] = vineReview.text().trim();
 
     reviewList.push(info);
   }

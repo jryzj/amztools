@@ -1,7 +1,7 @@
 {
   "manifest_version": 2,
   "name": "jry",
-  "version": "1.3.3",
+  "version": "1.3.4",
   "description": "for chrome extension study",
   "icons": {
     "16": "/img/baic16.png",

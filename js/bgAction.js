@@ -14,7 +14,11 @@ async function createTask(params) {
         (event, param) => {
           saveCsv(event.detail.data, param.actionFilename);
         },
-        null
+        () => {
+          taskNotification({
+            message: `任务：${params.action}\n关键词：${params.actionAsin}\n执行完毕!`,
+          });
+        }
       );
       task.times = 1;
       console.log(action);
@@ -56,6 +60,9 @@ async function createTask(params) {
               wordFreq(words, "aoo"),
               param.actionFilename + "_wordFreq" + ".csv"
             );
+            taskNotification({
+              message: `任务：${params.action}\n关键词：${params.actionAsin}\n执行完毕!`,
+            });
             res();
           });
         }
@@ -104,6 +111,9 @@ async function createTask(params) {
               wordFreq(words, "aoo"),
               param.actionFilename + "_wordFreq" + ".csv"
             );
+            taskNotification({
+              message: `任务：${params.action}\n关键词：${params.actionAsin}\n执行完毕!`,
+            });
             res();
           });
         }
@@ -122,8 +132,7 @@ async function createTask(params) {
           return new Promise(async (res, rej) => {
             saveCsv(event.detail.data, param.actionFilename);
             taskNotification({
-              message:
-                `任务：${params.action}\n关键词：${params.actionKV}\n执行完毕!`,
+              message: `任务：${params.action}\n关键词：${params.actionKV}\n执行完毕!`,
             });
             res();
           });
