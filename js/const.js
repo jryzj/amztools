@@ -95,7 +95,7 @@ const ACT_SEL = {
 };
 
 const webbase = "https://www.amazon.com";
-const webdomain = ".amazon.com";
+const webdomain = /.*amazon.*\.com/;
 const searchPath = "/s?k=";
 const asinBase = webbase + "/dp";
 const productReview = webbase + "/product-reviews";

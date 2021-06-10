@@ -211,3 +211,9 @@ function simlateFocus(ele) {
   evt.initEvent("focus", true, true);
   ele.dispatchEvent(evt);
 }
+// function clearCookie() {
+//   let cookieList = document.cookie.split(/;\s?/);
+//   for (cookieStr of cookieList) {
+//     let cookie
+//   }
+// }

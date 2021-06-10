@@ -481,13 +481,32 @@ async function makeTask(func, params, tabId, data) {
   console.log("tabId", tabId);
 }
 
-function clearCookie() {
-  chrome.cookies.getAll({ domain: webdomain }, function (cookieList) {
-    for (cookie of cookieList) {
-      chrome.cookies.remove({
-        url: "https://" + cookie.domain + cookie.path,
-        name: cookie.name,
+function clearFootprint() {
+  clearCookie(webdomain);
+  chrome.tabs.query({ url: "*://*.amazon.com/*" }, function (tabs) {
+    for (tab of tabs) {
+      postMsg(tab.id, {
+        amzAction: "clear storage",
       });
+    }
+  });
+}
+
+function clearCookie(domain) {
+  chrome.cookies.getAll({}, function (cookieList) {
+    for (cookie of cookieList) {
+      if (domain.test(cookie.domain) || cookie.sameSite == "no_restriction") {
+        //no_restriction 为了清除iframe广告系统的cookie，不精确，可能会误删其他domain下的cookie
+        chrome.cookies.remove({
+          url:
+            "http" +
+            (cookie.secure ? "s" : "") +
+            "://" +
+            cookie.domain +
+            cookie.path,
+          name: cookie.name,
+        });
+      }
     }
   });
 }

@@ -143,8 +143,8 @@ async function createTask(params) {
       Object.assign(task, action);
       taskList.push(task);
       break;
-    case "clear-cookie":
-      clearCookie();
+    case "clear-footprint":
+      clearFootprint();
       taskNotification({ message: "cookie清除完毕！" });
       break;
   }

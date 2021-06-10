@@ -57,6 +57,10 @@ chrome.runtime.onMessage.addListener(async function (req, sender, callback) {
         await amzFillSearchBar(req.params);
         sendMsg("done", suggestions.outerHTML);
         break;
+      case "clear storage":
+        console.log("here clear storage");
+        window.localStorage.clear();
+        window.sessionStorage.clear();
       default:
         console.log("no amzAction.");
         break;

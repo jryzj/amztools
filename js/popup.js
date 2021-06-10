@@ -34,7 +34,7 @@ $(document).ready(function () {
     let actionTimes = $("#asin-rank-times").val();
     let actionKV = $("#asin-rank-keyword").val();
     let actionMaxPage = $("#asin-rank-maxpage").val();
-    let actionZipcode = $("#asin-rank-zipcode").val();
+    let actionZipcode = generalSetting.zipcode;
     let actionFilename = $("#asin-rank-filename").val();
     console.log(
       action,
@@ -64,9 +64,9 @@ $(document).ready(function () {
       msg += "必须输入关键词。\r\n";
     }
 
-    if (actionZipcode == "") {
-      actionZipcode = generalSetting.zipcode;
-    }
+    // if (actionZipcode == "") {
+    //   actionZipcode = generalSetting.zipcode;
+    // }
 
     if (isNaN(actionMaxPage) || parseInt(actionMaxPage) == 0) {
       actionMaxPage = generalSetting.maxPage;
@@ -328,9 +328,9 @@ $(document).ready(function () {
   });
 
   //清除cookie
-  $("#task-clear-cookie").click(function () {
-    let action = "clear-cookie";
-    bg.createTask({action})
+  $("#task-clear-cookie").click(async function () {
+    let action = "clear-footprint";
+    bg.createTask({ action });
     // bg.clearCookie();
     // bg.taskNotification({ message: "cookie清除完毕！" });
   });
