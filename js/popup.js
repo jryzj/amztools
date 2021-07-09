@@ -14,6 +14,8 @@ $(document).ready(function () {
     $("#general-setting").html(generalSettingHtml);
   }
 
+  $("#amz-version").text(bg.toolsVersion)
+
   function showTasks() {
     let taskListHtml = template("task-template", { task_list: bg.taskList });
     $("#task-list").html(taskListHtml);

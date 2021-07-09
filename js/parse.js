@@ -172,9 +172,9 @@ function getAllQAonPage(page) {
   let QAList = [];
   let hasAllA = [];
   let qPage = $(page);
-  let QAs = $(ACT_SEL.allQA.slQADivs, qPage);
+  let QAs = $(ACT_SEL.allQA.slQADivs, qPage); //all QA div on the page
   for (let oneQA of QAs) {
-    let ADiv = $(ACT_SEL.allQA.slADiv, oneQA);
+    let ADiv = $(ACT_SEL.allQA.slADiv, oneQA); //A div in onr QA
     if ($(ACT_SEL.allQA.slASeeAll, ADiv).length > 0) {
       hasAllA.push({
         question: $(ACT_SEL.allQA.slQ, oneQA)[0].textContent.trim(),
@@ -184,9 +184,17 @@ function getAllQAonPage(page) {
           $(ACT_SEL.allQA.slASeeAll, ADiv)[0].search,
       });
     } else {
+      let ans = $(ACT_SEL.allQA.slA, ADiv);
+
+      if ($(ACT_SEL.allQA.slAL,ans[0]).length>0){
+        ans = $(ACT_SEL.allQA.slAL,ans[0])[0].textContent.trim().replace(/\s+/g, " ");
+      }else{
+        ans = ans[0].textContent.trim().replace(/\s+/g, " ");
+      }
       QAList.push({
         question: $(ACT_SEL.allQA.slQ, oneQA)[0].textContent.trim(),
-        answer: $(ACT_SEL.allQA.slA, ADiv)[0].textContent.trim(),
+        // answer: $(ACT_SEL.allQA.slA, ADiv)[0].textContent.trim(),
+        answer: ans,
         vote: $(ACT_SEL.allQA.slVote, oneQA)[0].textContent,
       });
     }
@@ -199,11 +207,11 @@ function getQAonPage(page) {
   let qPage = $(page);
   let answers = $(ACT_SEL.allQA.slAAllA, qPage);
   for (let a of answers) {
-    aContent = aContent + a.textContent + "***";
+    aContent = aContent + a.textContent + "***"; //*** is separator among answers.
   }
   // let hasNext = $(ACT_SEL.slNextPageBtn, qPage).length > 0 ? true : false;
   // return { answer: aContent, hasNext: hasNext };
-  return aContent;
+  return aContent.trim().replace(/\s+/g," ");
 }
 
 function getHotKV(suggestions) {

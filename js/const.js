@@ -1,3 +1,5 @@
+var toolsVersion = "1.3.6"
+
 const ACT_SEL = {
   slGlobalLocation: "#nav-global-location-popover-link",
   slSelectLocation: "[data-action-type='SELECT_LOCATION']",
@@ -73,6 +75,7 @@ const ACT_SEL = {
     slQ: "[id*=question] a", //innerText
     slADiv: ".a-fixed-left-grid.a-spacing-base", //based on slQADiv, innerText
     slA: ".a-fixed-left-grid-col.a-col-right span",
+    slAL:".askLongText",
     slASeeAll: "a:contains(See)", //based on slADiv
     slVote: ".count",
     // slQNext: "#askPaginationBar .a-last a",
